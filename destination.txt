@@ -1,0 +1,238 @@
+1.DDA line
+
+import matplotlib.pyplot as plt
+def DDA_LINE(x1, y1, x2, y2):
+    dx = x2 - x1
+    dy = y2 - y1
+    steps = max(abs(dx),abs(dy))
+    x_inc = dx / steps
+    y_inc = dy / steps
+    x = x1
+    y = y1
+    points = [(x1,y1)]
+    for _ in range(steps):
+        x += x_inc
+        y += y_inc
+        points.append((round(x),round(y)))
+    return zip(*points)
+
+x1, y1, x2, y2 = 2, 3, 15, 10
+x_points, y_points = DDA_LINE(x1, y1, x2, y2)
+plt.plot(x_points, y_points, marker = 'o', color = 'blue')
+plt.title('DDA LINE')
+plt.grid(True)
+plt.show()
+
+Explaination DDA
+
+1.DDA function: DDA_LINE draws a line between two points using DDA (Digital Differential Analyzer).
+2.Calculate differences: It finds the differences dx and dy between the two points.
+3.Calculate steps: The number of steps is the larger of dx or dy, for smooth plotting
+4.Find increments: x_inc and y_inc determine how much x and y should increase each step.
+5.Generate points: It starts from (x1,y1) and calculates the next points for each step.
+6.Round values: It rounds the calculated x and y values to get pixel positions.
+7.Plot: The points are plotted with matplotlib to display the line.
+
+
+2.Bresenham Line
+
+import matplotlib.pyplot as plt
+def bresenham_line(x1, y1, x2, y2):
+    dx, dy = abs(x2 - x1), abs(y2 - y1)
+    sx = 1 if x1 < x2 else -1
+    sy = 1 if y1 < y2 else -1
+    err = dx - dy
+    points = []
+    while True:
+        points.append((x1, y1))
+        if x1 == x2 and y1 == y2:
+            break
+        e2 = 2 * err
+        if e2 > -dy:
+            err -= dy
+            x1 += sx
+        if e2 < dx:
+            err += dx
+            y1 += sy
+    return zip(*points)
+x_points, y_points = bresenham_line(0, 0, 4, 4)
+plt.plot(x_points, y_points, marker='o', color='b')
+plt.title('Bresenham Line')
+plt.grid(True)
+plt.show()
+
+Explaination Bresenham
+
+1.Bresenham function: bresenham_line draws a line between two points using the Bresenham algorithm.
+2.Calculate differences: It calculates dx (difference in x) and dy (difference in y) between the two points.
+3.Set step directions: sx and sy define whether to step left/right or up/down depending on the points’ relative positions.
+4.Initialize error: err is the error term used to decide when to move horizontally or vertically.
+5.Generate points: The function starts at (x1,y1) and adjusts x and y step by step, depending on the error term.
+6.Store points: The calculated points are stored in points until the end point (x2,y2) is reached.
+7.Plot: The points are plotted using matplotlib, displaying the line on a grid.
+
+3.flood fill
+
+from PIL import Image, ImageDraw
+
+def flood_fill(image, x, y, fill_color, boundary_color):
+    pixels = image.load()
+    if pixels[x, y] in (boundary_color, fill_color):
+        return
+    stack = [(x, y)]
+    while stack:
+        x, y = stack.pop()
+        if pixels[x, y] in (boundary_color, fill_color):
+            continue
+        pixels[x, y] = fill_color
+        for nx, ny in [(x-1, y), (x+1, y), (x, y-1), (x, y+1)]:
+            if 0 <= nx < image.width and 0 <= ny < image.height:
+                stack.append((nx, ny))
+
+image = Image.new("RGB", (200, 200), (255, 255, 255))
+
+draw = ImageDraw.Draw(image)
+draw.ellipse((50, 50, 150, 150), outline=(0, 0, 0))
+
+flood_fill(image, 100, 100, (255, 0, 0), (0, 0, 0))
+
+image.show()
+image.save("flood_fill_circle.png")
+
+Explaination flood fill
+
+1.Flood fill function: The flood_fill function fills an area starting at (x, y) with a color, avoiding the boundary color.
+2.Pixel check: It checks if the starting pixel is already the boundary or fill color, and if not, it uses a stack to fill neighboring pixels.
+3.Image setup: A 200x200 white image is created, and a black-outlined circle is drawn on it.
+4.Fill operation: The function fills the inside of the circle with red, starting at the point (100, 100).
+5.Display and save: The image is displayed and saved as flood_fill_circle.png.
+
+4.BARSENLEY FERN
+
+import numpy as np
+import matplotlib.pyplot as plt
+import random
+
+def barnsley_fern(iterations):
+    x, y = 0, 0
+    x_points, y_points = [], []  # Lists to store points
+    for _ in range(iterations):  # Ensure the loop has an indented block
+        r = random.random()
+        if r < 0.01:  # Stem
+            x, y = 0, 0.16 * y
+        elif r < 0.86:  # Main leaflet
+            x, y = 0.85 * x + 0.04 * y, -0.04 * x + 0.85 * y + 1.6
+        elif r < 0.93:  # Left leaflet
+            x, y = 0.2 * x - 0.26 * y, 0.23 * x + 0.22 * y + 1.6
+        else:  # Right leaflet
+            x, y = -0.15 * x + 0.28 * y, 0.26 * x + 0.24 * y + 0.44
+        x_points.append(x)
+        y_points.append(y)
+    return x_points, y_points
+
+x_points, y_points = barnsley_fern(100000)
+plt.scatter(x_points, y_points, s=0.1, color='green')
+plt.axis('off')
+plt.show()
+
+Explaination BARSENLEY FERN
+
+1.Barnsley fern function: barnsley_fern generates points using different transformations to create a fern-like structure.
+2.Transformation probabilities: Four transformations (stem, main leaflet, left leaflet, right leaflet) are applied based on random probabilities.
+3.Point generation: The function starts at (x,y)=(0,0) and computes new points based on the transformations for each iteration.
+4.Store points: The generated points are stored in x_points and y_points.
+5.Plot: The points are plotted as a green fern using matplotlib.
+
+15 marks
+
+1.3D PLOTING
+
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+x = [1, 2, 3, 4, 5]
+y = [1, 2, 3, 4, 5]
+z = [1, 4, 9, 16, 25]
+ax.scatter(x, y, z) # 3D points
+plt.show()
+
+Explaination 3D ploting
+1.Create 3D plot: The Axes3D projection is used to set up a 3D plot using fig.add_subplot(111, projection='3d').
+2.Data points: Three lists (x, y, z) contain the coordinates for each point in 3D space.
+3.Scatter plot: ax.scatter(x, y, z) plots the points in 3D space, showing them as individual dots.
+4.Display plot: The plot is displayed using plt.show().
+
+2. 2D ploting
+import matplotlib.pyplot as plt
+circle = plt.Circle((0.5, 0.5), 0.2, fill = False)
+fig, ax = plt.subplots()
+ax.add_artist(circle)
+plt.show()
+
+Explaination 2D ploting
+1.Create a circle: plt.Circle((0.5, 0.5), 0.2, fill=False) creates a circle centered at (0.5, 0.5) with a radius of 0.2. The fill=False ensures the circle is not filled.
+2.Set up figure and axes: fig, ax = plt.subplots() sets up the plotting area, creating a figure and axes.
+3.Add circle to plot: ax.add_artist(circle) adds the circle to the axes.
+4.Display plot: plt.show() renders the plot, displaying the circle on the figure.
+
+
+3. 2D SCALING TRIANGLE
+
+import matplotlib.pyplot as plt
+
+def plot_shape(vertices, color, label):
+    vertices.append(vertices[0])
+    xs, ys = zip(*vertices)
+    plt.plot(xs, ys, marker='o', color=color, label=label)
+
+vertices = [(1, 1), (3, 5), (5, 1)]
+scaled_vertices = [(x * 2.5, y * 3) for x, y in vertices]
+
+plt.figure(figsize=(8, 8))
+plot_shape(vertices, 'blue', 'Original Triangle')
+plot_shape(scaled_vertices, 'red', 'Scaled Triangle')
+
+plt.xlabel('X-axis')
+plt.ylabel('Y-axis')
+plt.title('2D Scaling of a Triangle')
+plt.grid(True)
+plt.legend()
+plt.show()
+
+Explaination 2D scaling Trianngle
+1.Function for plotting: plot_shape draws a polygon by connecting the points from the vertices list and labels the shape.
+2.Original triangle: The vertices (1,1), (3,5),and (5,1) representing the original triangle.
+3.Scaled triangle: The scaled_vertices are calculated by scaling the x-coordinates by 2.5 and the y-coordinates by 3.
+4.Plotting: Both the original and scaled triangles are plotted on an 8x8 grid using different colors (blue and red).
+5.Display plot: The plot is displayed with axis labels, a title, and a legend showing both shapes.
+
+
+4. 2D SCALING RECTANGLE
+
+import matplotlib.pyplot as plt
+
+def plot_shape(vertices, color, label):
+    x_coords, y_coords = zip(*(vertices + [vertices[0]]))
+    plt.plot(x_coords, y_coords, marker='o', color=color, label=label)
+
+vertices = [(1, 1), (5, 1), (5, 3), (1, 3)]
+scaled_vertices = [(x * 2, y * 2) for x, y in vertices]
+
+plt.figure(figsize=(8, 8))
+plot_shape(vertices, 'blue', 'Original Rectangle')
+plot_shape(scaled_vertices, 'red', 'Scaled Rectangle')
+
+plt.xlabel('X-axis')
+plt.ylabel('Y-axis')
+plt.title('2D Scaling of a Rectangle')
+plt.grid(True)
+plt.legend()
+plt.show()
+
+Explaination 2D scaling Rectangle
+1.Function for plotting: plot_shape connects the points from the vertices list to form a closed shape and labels it.
+2.Original rectangle: The vertices (1,1),(1,5),(5,3),and,(1,3) define the original rectangle.
+3.Scaled rectangle: The scaled_vertices are calculated by multiplying the x and y coordinates by 2, resulting in a larger rectangle.
+4.Plotting: Both the original and scaled rectangles are plotted on an 8x8 grid with different colors (blue for original, red for scaled).
+5.Display plot: The plot is shown with axis labels, a title, and a legend to differentiate the rectangles.
